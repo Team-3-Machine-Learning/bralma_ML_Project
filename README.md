@@ -1,6 +1,6 @@
 # bralma
 
 Teamleden:
-Brent Peassens
+Brent Paessens
 Alex Hendrickx
 Mauro Leonardo
