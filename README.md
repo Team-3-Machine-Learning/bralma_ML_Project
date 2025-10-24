@@ -1,2 +1,6 @@
 # bralma
-Brent, Alex, Mauro. Machine Learning Project
+
+Teamleden:
+Brent Peassens
+Alex Hendrickx
+Mauro Leonardo
