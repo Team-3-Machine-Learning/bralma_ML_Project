@@ -208,3 +208,7 @@ __marimo__/
 
 *.zip
 *.csv
+
+# Dataset folders
+Dataset1/
+Dataset1/*
