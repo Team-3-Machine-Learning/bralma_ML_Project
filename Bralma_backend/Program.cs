@@ -20,7 +20,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/ukhousing", (UkHousingRequest request) =>
+app.MapPost("/prediction/ukhousing", (UkHousingRequest request) =>
 {
     var prediction = $"Dit is een prediction test :)";
 
@@ -33,7 +33,7 @@ app.MapPost("/ukhousing", (UkHousingRequest request) =>
 .WithName("GetUkHousingPrediction");
 
 
-app.MapPost("/elecdemand", (ElecDemandRequest request) =>
+app.MapPost("/prediction/elecdemand", (ElecDemandRequest request) =>
 {
     var prediction = $"Dit is een prediction test :)";
 
