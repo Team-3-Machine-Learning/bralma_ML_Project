@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Bralma_backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ccb26951713975d09a626df426694465c764f76b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d50e81f306cae0f42daa97fda415b3bceefc0dc4")]
 [assembly: System.Reflection.AssemblyProductAttribute("Bralma_backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Bralma_backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
