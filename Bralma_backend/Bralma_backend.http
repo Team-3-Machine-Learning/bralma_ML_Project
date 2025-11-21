@@ -1,0 +1,6 @@
+@Bralma_backend_HostAddress = http://localhost:5279
+
+GET {{Bralma_backend_HostAddress}}/prediction/
+Accept: application/json
+
+###
