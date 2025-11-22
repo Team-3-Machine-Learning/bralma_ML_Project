@@ -1,8 +1,7 @@
+lightgbm==3.4.1
+numpy==1.24.0
+pandas==2.1.0
+scikit-learn==1.7.2
+pycaret==3.3.2
 fastapi==0.121.3
 uvicorn[standard]==0.23.2
-pydantic==2.12.4
-pandas==2.1.4
-numpy==1.26.4
-scikit-learn==1.4.2
-lightgbm==3.3.1
-pycaret==3.3.2
