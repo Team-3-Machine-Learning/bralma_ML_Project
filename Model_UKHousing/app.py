@@ -4,7 +4,7 @@ import pandas as pd
 
 app = FastAPI()
 
-model = load_model("./england_wales_demand_predictor.pkl")
+model = load_model("./best_property_type_model.pkl")
 
 @app.post("/predict")
 def predict(data: dict):
