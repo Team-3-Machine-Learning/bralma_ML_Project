@@ -1,11 +1,9 @@
-fastapi==0.121.3
-uvicorn[standard]==0.23.2
-
 pycaret==3.0.4
 
-# PyCaret deps
-scikit-learn==1.2.2
-numpy==1.26.4
-pandas==2.1.4
+numpy==1.23.5
+pandas==1.5.3
+scikit-learn==1.1.3
 lightgbm==3.3.5
-scipy==1.10.1
+
+fastapi==0.110.0
+uvicorn[standard]==0.23.2
