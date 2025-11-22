@@ -1,4 +1,4 @@
-fastapi
-uvicorn
 pycaret==3.3.0
-pandas
+fastapi
+uvicorn[standard]
+pandas==2.1.4
