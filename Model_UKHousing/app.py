@@ -14,3 +14,7 @@ def predict(data: dict):
         "label": pred.loc[0, "prediction_label"],
         "score": float(pred.loc[0, "prediction_score"])
     }
+
+@app.get("/")
+def root():
+    return {"message": "API is running!"}
