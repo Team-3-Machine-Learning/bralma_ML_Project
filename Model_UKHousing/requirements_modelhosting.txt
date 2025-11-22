@@ -1,4 +1,8 @@
-pycaret==3.3.0
-fastapi
+fastapi==0.121.3
 uvicorn[standard]
+pydantic==2.12.4
+scikit-learn==1.4.0
 pandas==2.1.4
+numpy==1.26.4
+
+lightgbm==4.3.0
