@@ -1,8 +1,8 @@
 pycaret==3.0.4
 
+numpy==1.23.5
+pandas==1.5.3
 scikit-learn==1.4.2
-numpy<2
-pandas<2.2
 scipy<1.11
 lightgbm==3.3.5
 scikit-plot==0.3.7
