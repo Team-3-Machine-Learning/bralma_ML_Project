@@ -9,7 +9,7 @@ st.title("🏠 UK Housing Property Type Predictor")
 st.markdown("*Voorspel het woningtype op basis van prijs, locatie en kenmerken*")
 
 # API URL
-API_URL = "https://bralma-backend.onrender.com"
+API_URL = "https://bralma-ml-project.onrender.com/prediction/ukhousing"
 
 # Mapping functies: User-friendly → API values
 def map_price_category_to_range(category):
