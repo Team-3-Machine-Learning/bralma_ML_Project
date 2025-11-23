@@ -9,7 +9,7 @@ st.title("🏠 UK Housing Property Type Predictor")
 st.markdown("*Voorspel het woningtype op basis van prijs, locatie en kenmerken*")
 
 # API URL
-API_URL = "https://bralma-backend.onrender.com"
+API_URL = "https://bralma-ml-project.onrender.com/prediction/ukhousing"
 
 # Mapping functies: User-friendly → API values
 def map_price_category_to_range(category):
@@ -48,7 +48,7 @@ def predict_property_type_api(payload):
     """Call API for property type prediction"""
     try:
         response = requests.post(
-            f"{API_URL}/api/housing/predict",
+            f"{API_URL}",
             json=payload,
             timeout=15
         )
@@ -71,7 +71,7 @@ def predict_property_type_api(payload):
         return None, None, None
 
 # Create tabs
-tab1, tab2, tab3 = st.tabs(["🎯 Voorspelling", "📊 Batch Analyse", "ℹ️ Info"])
+tab1, tab2 = st.tabs(["🎯 Voorspelling", "ℹ️ Info"])
 
 with tab1:
     st.subheader("🎯 Property Type Voorspelling")
@@ -343,36 +343,8 @@ with tab1:
                     else:
                         st.info(f"📍 {region}: Typische {county} markt")
 
-with tab2:
-    st.subheader("📊 Batch Analyse")
-    st.markdown("*Upload meerdere woningen en voorspel types in bulk*")
-    
-    st.info("🚧 **Coming soon**: Upload CSV met property data voor bulk voorspelling")
-    
-    # Show example CSV format
-    st.markdown("### 📋 Verwachte CSV Format")
-    
-    example_df = pd.DataFrame({
-        "price": [145000, 320000, 580000, 125000],
-        "townCity": ["LEEDS", "MANCHESTER", "LONDON", "LIVERPOOL"],
-        "county": ["WEST YORKSHIRE", "GREATER MANCHESTER", "GREATER LONDON", "MERSEYSIDE"],
-        "oldNew": ["O", "N", "O", "O"],
-        "duration": ["F", "F", "L", "F"]
-    })
-    
-    st.dataframe(example_df, use_container_width=True)
-    
-    # File uploader (placeholder)
-    uploaded_file = st.file_uploader(
-        "Upload CSV bestand",
-        type=["csv"],
-        help="CSV met kolommen: price, townCity, county, oldNew, duration"
-    )
-    
-    if uploaded_file:
-        st.warning("⚠️ Batch voorspelling API endpoint nog niet geïmplementeerd")
 
-with tab3:
+with tab2:
     st.subheader("ℹ️ Over UK Housing Predictor")
     
     col_info1, col_info2 = st.columns(2)

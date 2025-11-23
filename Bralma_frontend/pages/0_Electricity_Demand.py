@@ -11,7 +11,7 @@ st.title("⚡ UK Electricity Demand Predictor")
 st.markdown("*Voorspel de elektriciteitsvraag op basis van weer, tijd en seizoen*")
 
 # API URL
-API_URL = "https://bralma-backend.onrender.com"
+API_URL = "https://bralma-ml-project.onrender.co/prediction/elecdemand"
 
 # Mapping functies: User-friendly → API values
 def map_wind_to_mw(category, capacity=6000):
@@ -64,7 +64,7 @@ def predict_demand_api(payload):
     """Call API with full feature set"""
     try:
         response = requests.post(
-            f"{API_URL}/api/predict",
+            f"{API_URL}",
             json=payload,
             timeout=15
         )
@@ -87,7 +87,7 @@ def predict_demand_api(payload):
         return None, None
 
 # Create tabs for better organization
-tab1, tab2, tab3 = st.tabs(["🎯 Voorspelling", "📊 24u Forecast", "ℹ️ Info"])
+tab1, tab2 = st.tabs(["🎯 Voorspelling", "ℹ️ Info"])
 
 with tab1:
     st.subheader("🎯 Eenvoudige Voorspelling")
@@ -172,36 +172,6 @@ with tab1:
         elif solar_utilization > 60:
             st.caption("☀️ Uitstekende zon conditie!")
     
-    # Advanced options (collapsible)
-    with st.expander("⚙️ Geavanceerde Opties (optioneel)"):
-        st.markdown("*Deze waardes zijn vooraf ingesteld op typische waardes. Alleen aanpassen als je expert bent.*")
-        
-        col_adv1, col_adv2 = st.columns(2)
-        
-        with col_adv1:
-            st.markdown("**🔌 Interconnectors** (import/export)")
-            ifa2_flow = st.number_input("IFA2 (France)", -1000, 1000, 0, help="Negatief = export")
-            britned_flow = st.number_input("BritNed (Netherlands)", -1000, 1000, 500)
-            moyle_flow = st.number_input("Moyle (N. Ireland)", -500, 500, 150)
-            east_west_flow = st.number_input("East-West (Ireland)", -500, 500, 300)
-            nemo_flow = st.number_input("Nemo (Belgium)", -1000, 1000, 0)
-        
-        with col_adv2:
-            st.markdown("**🔋 Storage & Reserves**")
-            non_bm_stor = st.number_input("Non-BM STOR (MW)", 0, 2000, 0)
-            pump_storage = st.number_input("Pump Storage (MW)", 0, 3000, 400)
-            
-            # England Wales Demand (optional, for comparison)
-            england_wales_demand = st.number_input(
-                "Huidige E&W Demand (optioneel)",
-                15000, 50000, 25000,
-                help="Voor vergelijking met voorspelling"
-            )
-    
-    # Set defaults if not in expander
-    if 'ifa2_flow' not in locals():
-        ifa2_flow, britned_flow, moyle_flow, east_west_flow, nemo_flow = 0, 500, 150, 300, 0
-        non_bm_stor, pump_storage = 0, 400
         england_wales_demand = 25000
     
     # Predict button
@@ -226,15 +196,7 @@ with tab1:
             "embeddedWindGeneration": float(wind_generation),
             "embeddedWindCapacity": float(wind_capacity),
             "embeddedSolarGeneration": float(solar_generation),
-            "embeddedSolarCapacity": float(solar_capacity),
-            "nonBmStor": non_bm_stor,
-            "pumpStoragePumping": pump_storage,
-            "ifa2Flow": float(ifa2_flow),
-            "britnedFlow": float(britned_flow),
-            "moyleFlow": float(moyle_flow),
-            "eastWestFlow": float(east_west_flow),
-            "nemoFlow": float(nemo_flow),
-            "year": 2017  # Dummy year (niet gebruikt in model)
+            "embeddedSolarCapacity": float(solar_capacity)
         }
         
         with st.spinner("⏳ API call in progress..."):
@@ -269,199 +231,7 @@ with tab1:
                 
                 st.success("✅ Voorspelling succesvol!")
                 
-                # Visual breakdown
-                st.markdown("### 📊 Energy Mix Breakdown")
-                
-                total_interconnector = ifa2_flow + britned_flow + moyle_flow + east_west_flow + nemo_flow
-                
-                breakdown_df = pd.DataFrame({
-                    "Bron": ["🌬️ Wind", "☀️ Solar", "🔌 Import", "🔋 Storage", "🏭 Conventioneel"],
-                    "MW": [
-                        wind_generation,
-                        solar_generation,
-                        max(0, total_interconnector),
-                        non_bm_stor,
-                        max(0, prediction - wind_generation - solar_generation - max(0, total_interconnector) - non_bm_stor)
-                    ]
-                })
-                
-                col_chart1, col_chart2 = st.columns([2, 1])
-                
-                with col_chart1:
-                    fig = px.pie(
-                        breakdown_df, 
-                        values="MW", 
-                        names="Bron", 
-                        hole=0.4,
-                        title="Energie Samenstelling"
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
-                
-                with col_chart2:
-                    st.markdown("**💡 Interpretatie:**")
-                    if renewable_pct > 50:
-                        st.success(f"✅ {renewable_pct:.0f}% hernieuwbaar - uitstekend!")
-                    elif renewable_pct > 25:
-                        st.info(f"📊 {renewable_pct:.0f}% hernieuwbaar - goed")
-                    else:
-                        st.warning(f"⚠️ {renewable_pct:.0f}% hernieuwbaar - laag")
-                    
-                    st.markdown("---")
-                    st.dataframe(breakdown_df, hide_index=True, use_container_width=True)
-
 with tab2:
-    st.subheader("📊 24-Uurs Voorspelling")
-    st.markdown("*Bekijk hoe demand varieert over een volledige dag*")
-    
-    forecast_col1, forecast_col2 = st.columns([1, 3])
-    
-    with forecast_col1:
-        st.markdown("### Scenario")
-        
-        # Season for forecast
-        forecast_season = st.selectbox(
-            "Seizoen",
-            ["Winter", "Lente", "Zomer", "Herfst"],
-            index=2,  # Summer by default
-            key="forecast_season"
-        )
-        
-        # Wind scenario
-        forecast_wind = st.select_slider(
-            "Windkracht (constant over dag)",
-            options=["Geen (windstil)", "Weinig", "Matig", "Veel", "Storm"],
-            value="Matig",
-            key="forecast_wind"
-        )
-        
-        # Calculate base wind
-        base_wind_capacity = 6000
-        base_wind = map_wind_to_mw(forecast_wind, base_wind_capacity)
-        
-        st.info(f"🌬️ Wind: **{base_wind:,} MW** constant")
-        st.caption("☀️ Solar varieert automatisch per tijdstip")
-    
-    with forecast_col2:
-        if st.button("🔮 Genereer 24u Forecast", type="primary"):
-            with st.spinner("⏳ Genereer 48 voorspellingen (kan 30-60 sec duren)..."):
-                forecast_data = []
-                progress_bar = st.progress(0)
-                
-                # Fixed capacities
-                forecast_wind_capacity = 6000
-                forecast_solar_capacity = 12000
-                
-                # Loop through all 48 settlement periods
-                for period in range(1, 49):
-                    # Update progress
-                    progress_bar.progress(period / 48)
-                    
-                    # Calculate solar based on time + season
-                    hour_of_day = (period - 1) // 2
-                    period_solar = calculate_solar_generation(hour_of_day, forecast_season, forecast_solar_capacity)
-                    
-                    payload = {
-                        "settlementDate": "2017-12-31",
-                        "settlementPeriod": period,
-                        "englandWalesDemand": 25000,  # Dummy value
-                        "embeddedWindGeneration": float(base_wind),
-                        "embeddedWindCapacity": float(forecast_wind_capacity),
-                        "embeddedSolarGeneration": float(period_solar),
-                        "embeddedSolarCapacity": float(forecast_solar_capacity),
-                        "nonBmStor": 0,
-                        "pumpStoragePumping": 400,
-                        "ifa2Flow": 0.0,
-                        "britnedFlow": 500.0,
-                        "moyleFlow": 150.0,
-                        "eastWestFlow": 300.0,
-                        "nemoFlow": 0.0,
-                        "year": 2017
-                    }
-                    
-                    pred, _ = predict_demand_api(payload)
-                    if pred is not None:
-                        hour_display = (period - 1) // 2
-                        minute_display = "00" if period % 2 == 1 else "30"
-                        renewable_pct = ((base_wind + period_solar) / pred * 100) if pred > 0 else 0
-                        
-                        forecast_data.append({
-                            "Period": period,
-                            "Uur": f"{hour_display:02d}:{minute_display}",
-                            "Demand (MW)": pred,
-                            "Wind (MW)": base_wind,
-                            "Solar (MW)": period_solar,
-                            "Hernieuwbaar %": renewable_pct
-                        })
-                
-                progress_bar.empty()
-                
-                if forecast_data:
-                    df_forecast = pd.DataFrame(forecast_data)
-                    
-                    st.success(f"✅ {len(forecast_data)} voorspellingen gegenereerd!")
-                    
-                    # Key metrics
-                    col_fc1, col_fc2, col_fc3, col_fc4 = st.columns(4)
-                    with col_fc1:
-                        st.metric("📊 Gemiddelde Vraag", f"{df_forecast['Demand (MW)'].mean():,.0f} MW")
-                    with col_fc2:
-                        st.metric("⬆️ Piek Vraag", f"{df_forecast['Demand (MW)'].max():,.0f} MW")
-                    with col_fc3:
-                        st.metric("⬇️ Laagste Vraag", f"{df_forecast['Demand (MW)'].min():,.0f} MW")
-                    with col_fc4:
-                        avg_renewable = df_forecast['Hernieuwbaar %'].mean()
-                        st.metric("♻️ Gem. Hernieuwbaar", f"{avg_renewable:.1f}%")
-                    
-                    # Line chart - Demand
-                    fig_line = px.line(
-                        df_forecast, 
-                        x="Uur", 
-                        y="Demand (MW)", 
-                        markers=True,
-                        title=f"24-Uurs Vraagpatroon ({forecast_season}, {forecast_wind})"
-                    )
-                    fig_line.update_layout(xaxis_title="Tijdstip", yaxis_title="Demand (MW)")
-                    st.plotly_chart(fig_line, use_container_width=True)
-                    
-                    # Stacked area for generation mix
-                    fig_area = px.area(
-                        df_forecast,
-                        x="Uur",
-                        y=["Wind (MW)", "Solar (MW)"],
-                        title="Hernieuwbare Energie Productie",
-                        labels={"value": "MW", "variable": "Bron"}
-                    )
-                    st.plotly_chart(fig_area, use_container_width=True)
-                    
-                    # Renewable percentage over time
-                    fig_renewable = px.line(
-                        df_forecast,
-                        x="Uur",
-                        y="Hernieuwbaar %",
-                        title="Hernieuwbaar Aandeel over de Dag",
-                        markers=True
-                    )
-                    fig_renewable.add_hline(y=50, line_dash="dash", line_color="green", 
-                                           annotation_text="50% doel")
-                    st.plotly_chart(fig_renewable, use_container_width=True)
-                    
-                    # Show data table (collapsed by default)
-                    with st.expander("📋 Bekijk Volledige Data"):
-                        st.dataframe(df_forecast, use_container_width=True, hide_index=True)
-                    
-                    # Download button
-                    csv = df_forecast.to_csv(index=False)
-                    st.download_button(
-                        label="📥 Download Forecast (CSV)",
-                        data=csv,
-                        file_name=f"24h_forecast_{forecast_season}_{forecast_wind}.csv",
-                        mime="text/csv",
-                        use_container_width=True
-                    )
-                else:
-                    st.error("❌ Kon geen forecast genereren. Controleer API verbinding.")
-
-with tab3:
     st.subheader("ℹ️ Over deze applicatie")
     
     col_info1, col_info2 = st.columns(2)
