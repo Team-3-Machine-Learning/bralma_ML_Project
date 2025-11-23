@@ -2,12 +2,10 @@ namespace Bralma_backend.Models;
 
 public record class ElecDemandResponse
 {
-    public string Response = "Succes!";
-    public double EnglandWalesDemand;
+    public string EnglandWalesDemand;
 
-    public ElecDemandResponse(string response, double englandWalesDemand)
+    public ElecDemandResponse(string englandWalesDemand)
     {
-        Response = response;
         EnglandWalesDemand = englandWalesDemand;
     }
 }

@@ -20,29 +20,44 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/prediction/ukhousing", (UkHousingRequest request) =>
+app.MapPost("/prediction/ukhousing", async (UkHousingRequest request) =>
 {
-    var prediction = $"Dit is een prediction test :)";
+    using var client = new HttpClient();
+    var url = "https://bralma-ml-project-ai-ukhousing.onrender.com/predict";
 
-    // Call aws for response
+    var response = await client.PostAsJsonAsync(url, request);
 
-    UkHousingResponse response = new(prediction, PropertyType.D);
+    if (!response.IsSuccessStatusCode)
+    {
+        return Results.Problem("Failed to fetch prediction from ML API Elec Demand!");
+    }
 
-    return Results.Ok(response);
+    var result = await response.Content.ReadAsStringAsync();
+
+    UkHousingResponse ukHousingResponse = new(result);
+
+    return Results.Ok(ukHousingResponse);
 })
 .WithName("GetUkHousingPrediction");
 
 
-app.MapPost("/prediction/elecdemand", (ElecDemandRequest request) =>
+app.MapPost("/prediction/elecdemand", async (ElecDemandRequest request) =>
 {
-    var prediction = $"Dit is een prediction test :)";
+    using var client = new HttpClient();
+    var url = "https://bralma-ml-project-ai-elec-demand.onrender.com/predict";
 
-    // Call aws for response
-    double england_wales_demand = 128;
+    var response = await client.PostAsJsonAsync(url, request);
 
-    ElecDemandResponse response = new(prediction, england_wales_demand);
+    if (!response.IsSuccessStatusCode)
+    {
+        return Results.Problem("Failed to fetch prediction from ML API Elec Demand!");
+    }
 
-    return Results.Ok(response);
+    var result = await response.Content.ReadAsStringAsync();
+
+    ElecDemandResponse elecDemandResponse = new(result);
+
+    return Results.Ok(elecDemandResponse);
 })
 .WithName("GetElecDemandPrediction");
 
