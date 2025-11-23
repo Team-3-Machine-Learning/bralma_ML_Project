@@ -9,11 +9,11 @@ model = load_model("./england_wales_demand_model")
 @app.post("/predict")
 def predict(data: dict):
     df = pd.DataFrame([data])
-
-    pred_df = predict_model(model, df)
-    predicted_value = pred_df.loc[0, "Label"] if "Label" in pred_df.columns else pred_df.iloc[0, 0]
-
-    return {"EnglandWalesDemand": predicted_value}
+    pred = predict_model(model, df)
+    return {
+        "label": pred.loc[0, "prediction_label"],
+        "score": float(pred.loc[0, "prediction_score"])
+    }
 
 @app.get("/")
 def root():
