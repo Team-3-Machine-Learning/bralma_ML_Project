@@ -12,7 +12,6 @@ def predict(data: dict):
     pred = predict_model(model, df)
     return {
         "label": pred.loc[0, "prediction_label"],
-        "score": float(pred.loc[0, "prediction_score"])
     }
 
 @app.get("/")
