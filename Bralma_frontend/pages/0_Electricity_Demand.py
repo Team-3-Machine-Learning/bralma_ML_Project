@@ -5,8 +5,8 @@ import requests
 import math
 from datetime import datetime, date
 
-# Streamlit App Configuration
-st.set_page_config(page_title="⚡ Electricity Demand Predictor", layout="wide")
+# Page configuration
+st.set_page_config(page_title="⚡ Electricity Demand", layout="wide", page_icon="⚡")
 st.title("⚡ UK Electricity Demand Predictor")
 st.markdown("*Voorspel de elektriciteitsvraag op basis van weer, tijd en seizoen*")
 
