@@ -205,7 +205,7 @@ with tab1:
                 st.markdown("### 🎯 Resultaten")
                 col_res1, col_res2, col_res3 = st.columns(3)
 
-                prediction_value = float(prediction["label"])
+                prediction_value = float(prediction[0])
 
                 with col_res1:
                     st.metric(
