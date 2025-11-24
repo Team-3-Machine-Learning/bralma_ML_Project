@@ -1,3 +1,4 @@
+import json
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -71,7 +72,10 @@ def predict_demand_api(payload):
         
         if response.status_code == 200:
             data = response.json()
-            return data.get('englandWalesDemand')
+            inner_json_str = data.get('englandWalesDemand')
+            if inner_json_str:
+                inner_dict = json.loads(inner_json_str)
+                return float(inner_dict["label"])
         else:
             st.error(f"API Error: {response.status_code} - {response.text}")
             return None, None
@@ -205,16 +209,14 @@ with tab1:
                 st.markdown("### 🎯 Resultaten")
                 col_res1, col_res2, col_res3 = st.columns(3)
 
-                prediction_value = float(prediction[0])
-
                 with col_res1:
                     st.metric(
                         "Voorspelde Vraag", 
-                        f"{prediction_value:,.0f} MW"
+                        f"{prediction:,.0f} MW"
                     )
                 
                 with col_res2:
-                    renewable_pct = ((wind_generation + solar_generation) / prediction_value * 100) if prediction_value > 0 else 0
+                    renewable_pct = ((wind_generation + solar_generation) / prediction * 100) if prediction > 0 else 0
                     st.metric("♻️ Hernieuwbaar Aandeel", f"{renewable_pct:.1f}%")
                 
                 # with col_res3:
