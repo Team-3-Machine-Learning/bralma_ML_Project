@@ -11,7 +11,7 @@ st.title("⚡ UK Electricity Demand Predictor")
 st.markdown("*Voorspel de elektriciteitsvraag op basis van weer, tijd en seizoen*")
 
 # API URL
-API_URL = "https://bralma-ml-project.onrender.co/prediction/elecdemand"
+API_URL = "https://bralma-ml-project.onrender.com/prediction/elecdemand"
 
 # Mapping functies: User-friendly → API values
 def map_wind_to_mw(category, capacity=6000):
