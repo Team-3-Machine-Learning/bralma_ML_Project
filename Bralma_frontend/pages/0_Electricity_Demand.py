@@ -11,8 +11,17 @@ st.set_page_config(page_title="⚡ Electricity Demand", layout="wide", page_icon
 st.title("⚡ UK Electricity Demand Predictor")
 st.markdown("*Voorspel de elektriciteitsvraag op basis van weer, tijd en seizoen*")
 
-# API URL
+# API URLs
 API_URL = "https://bralma-ml-project.onrender.com/prediction/elecdemand"
+AI_MODEL_URL = "https://bralma-ml-project-ai-elec-demand.onrender.com/"
+
+def wake_up_model(model_url, timeout=10):
+    """Ping AI model to wake it up from idle state"""
+    try:
+        response = requests.get(model_url, timeout=timeout)
+        return response.status_code in [200, 404]  # 404 is ok, means service is alive
+    except:
+        return False
 
 # Mapping functies: User-friendly → API values
 def map_wind_to_mw(category, capacity=6000):
@@ -192,6 +201,14 @@ with tab1:
         st.info(f"♻️ {renewable_total:,} MW hernieuwbaar")
     
     if st.button("🚀 Voorspel Demand", type="primary", use_container_width=True):
+        # Wake up AI model first
+        with st.spinner("🔄 Waking up AI model..."):
+            wake_success = wake_up_model(AI_MODEL_URL)
+            if wake_success:
+                st.success("✅ AI model is active", icon="🤖")
+            else:
+                st.warning("⚠️ AI model might be slow to respond", icon="⏱️")
+        
         # Build payload for API
         payload = {
             "settlement_period": settlement_period,
