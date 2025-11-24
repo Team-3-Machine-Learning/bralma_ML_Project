@@ -204,15 +204,17 @@ with tab1:
                 # Display results
                 st.markdown("### 🎯 Resultaten")
                 col_res1, col_res2, col_res3 = st.columns(3)
-                
+
+                prediction_value = float(prediction["label"])
+
                 with col_res1:
                     st.metric(
                         "Voorspelde Vraag", 
-                        f"{prediction:,.0f} MW"
+                        f"{prediction_value:,.0f} MW"
                     )
                 
                 with col_res2:
-                    renewable_pct = ((wind_generation + solar_generation) / prediction * 100) if prediction > 0 else 0
+                    renewable_pct = ((wind_generation + solar_generation) / prediction_value * 100) if prediction_value > 0 else 0
                     st.metric("♻️ Hernieuwbaar Aandeel", f"{renewable_pct:.1f}%")
                 
                 # with col_res3:
