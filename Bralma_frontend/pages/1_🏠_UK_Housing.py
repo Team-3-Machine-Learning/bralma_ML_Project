@@ -8,8 +8,17 @@ st.set_page_config(page_title="🏠 UK Housing", layout="wide", page_icon="🏠"
 st.title("🏠 UK Housing Property Type Predictor")
 st.markdown("*Voorspel het woningtype op basis van prijs, locatie en kenmerken*")
 
-# API URL
+# API URLs
 API_URL = "https://bralma-ml-project.onrender.com/prediction/ukhousing"
+AI_MODEL_URL = "https://bralma-ml-project-ai-ukhousing.onrender.com/"
+
+def wake_up_model(model_url, timeout=10):
+    """Ping AI model to wake it up from idle state"""
+    try:
+        response = requests.get(model_url, timeout=timeout)
+        return response.status_code in [200, 404]  # 404 is ok, means service is alive
+    except:
+        return False
 
 # Mapping functies: User-friendly → API values
 def map_price_category_to_range(category):
@@ -219,6 +228,14 @@ with tab1:
     st.markdown("---")
     
     if st.button("🚀 Voorspel Property Type", type="primary", use_container_width=True):
+        # Wake up AI model first
+        with st.spinner("🔄 Waking up AI model..."):
+            wake_success = wake_up_model(AI_MODEL_URL)
+            if wake_success:
+                st.success("✅ AI model is active")
+            else:
+                st.warning("⚠️ AI model might be slow to respond")
+        
         # Build payload for API
         payload = {
             "price": price,
@@ -248,9 +265,9 @@ with tab1:
                 # Display results
                 st.markdown("### 🎯 Voorspelling")
                 
-                col_res1, col_res2, col_res3 = st.columns(3)
+                col_res1 = st.columns(1)
                 
-                with col_res1:
+                with col_res1[0]:
                     # Map property type to full name
                     type_mapping = {
                         "D": "🏡 Detached (vrijstaand)",
@@ -262,69 +279,7 @@ with tab1:
                     full_type = type_mapping.get(property_type, property_type)
                     st.metric("Voorspeld Type", full_type)
                 
-                # with col_res2:
-                #     if confidence:
-                #         st.metric("📊 Zekerheid", f"{confidence:.1%}")
-                #     # else:
-                #     #     st.metric("Model", "Classification")
-                
-                # with col_res3:
-                #     # Show typical price for this type
-                #     type_price_ranges = {
-                #         "D": "£350k-800k",
-                #         "S": "£200k-400k",
-                #         "T": "£150k-300k",
-                #         "F": "£100k-250k"
-                #     }
-                #     typical_range = type_price_ranges.get(property_type, "Varieert")
-                #     st.metric("Typisch prijsbereik", typical_range)
-                
                 st.success("✅ Voorspelling succesvol!")
-                
-                # # Show probabilities if available
-                # if probabilities:
-                #     st.markdown("### 📊 Kansenverdeling per Type")
-                    
-                #     # Create dataframe for visualization
-                #     prob_df = pd.DataFrame({
-                #         "Type": list(probabilities.keys()),
-                #         "Kans (%)": [p * 100 for p in probabilities.values()]
-                #     })
-                    
-                #     # Sort by probability
-                #     prob_df = prob_df.sort_values("Kans (%)", ascending=False)
-                    
-                #     col_chart1, col_chart2 = st.columns([2, 1])
-                    
-                #     with col_chart1:
-                #         # Bar chart
-                #         fig = px.bar(
-                #             prob_df,
-                #             x="Type",
-                #             y="Kans (%)",
-                #             title="Waarschijnlijkheid per Property Type",
-                #             color="Kans (%)",
-                #             color_continuous_scale="Blues"
-                #         )
-                #         fig.update_layout(showlegend=False)
-                #         st.plotly_chart(fig, use_container_width=True)
-                    
-                #     with col_chart2:
-                #         st.markdown("**💡 Interpretatie:**")
-                        
-                #         max_prob = prob_df.iloc[0]["Kans (%)"]
-                #         second_prob = prob_df.iloc[1]["Kans (%)"] if len(prob_df) > 1 else 0
-                        
-                #         if max_prob > 80:
-                #             st.success(f"✅ Zeer zeker: {max_prob:.1f}%")
-                #         elif max_prob > 60:
-                #             st.info(f"📊 Waarschijnlijk: {max_prob:.1f}%")
-                #         else:
-                #             st.warning(f"⚠️ Onzeker: {max_prob:.1f}% vs {second_prob:.1f}%")
-                        
-                #         st.markdown("---")
-                #         st.dataframe(prob_df, hide_index=True, use_container_width=True)
-                
 
 
 with tab2:
