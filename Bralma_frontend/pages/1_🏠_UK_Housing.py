@@ -222,14 +222,11 @@ with tab1:
         # Build payload for API
         payload = {
             "price": price,
-            "date_of_transfer": "2017-06-15",
             "old/new": old_new_code,
             "duration": duration_code,
             "town/city": town_city.upper(),
             "district": district.upper(),
             "county": county.upper(),
-            "ppdcategory_type": "A",
-            "year": 2017
         }
 
 

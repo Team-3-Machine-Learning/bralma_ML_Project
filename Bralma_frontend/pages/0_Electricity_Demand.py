@@ -190,13 +190,11 @@ with tab1:
     if st.button("🚀 Voorspel Demand", type="primary", use_container_width=True):
         # Build payload for API
         payload = {
-            "settlementDate": "2017-12-31",  # Dummy date (niet gebruikt in model)
-            "settlementPeriod": settlement_period,
-            "englandWalesDemand": england_wales_demand,
-            "embeddedWindGeneration": float(wind_generation),
-            "embeddedWindCapacity": float(wind_capacity),
-            "embeddedSolarGeneration": float(solar_generation),
-            "embeddedSolarCapacity": float(solar_capacity)
+            "settlement_period": settlement_period,
+            "embedded_wind_generation": float(wind_generation),
+            "embedded_wind_capacity": float(wind_capacity),
+            "embedded_solar_generation": float(solar_generation),
+            "embedded_solar_capacity": float(solar_capacity)
         }
         
         with st.spinner("⏳ API call in progress..."):

@@ -7,9 +7,6 @@ namespace Bralma_backend.Models
         [JsonPropertyName("price")]
         public required int Price { get; init; }
 
-        [JsonPropertyName("date_of_transfer")]
-        public required string DateOfTransfer { get; init; }
-
         [JsonPropertyName("old/new")]
         public required string OldNew { get; init; }
 
@@ -24,11 +21,5 @@ namespace Bralma_backend.Models
 
         [JsonPropertyName("county")]
         public required string County { get; init; }
-
-        [JsonPropertyName("ppdcategory_type")]
-        public required string PpdcategoryType { get; init; }
-
-        [JsonPropertyName("year")]
-        public required int Year { get; init; }
     }
 }
