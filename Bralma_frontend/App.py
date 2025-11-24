@@ -6,64 +6,104 @@ import math
 from datetime import datetime, date
 
 # Streamlit App Configuration
-st.set_page_config(page_title="⚡ Electricity Demand Predictor", layout="wide")
-st.title("⚡ UK Electricity Demand Predictor")
-st.markdown("*Voorspel de elektriciteitsvraag op basis van weer, tijd en seizoen*")
+st.set_page_config(page_title="Dashboard", layout="wide", page_icon="🤖")
+st.title("Machine Learning Predictions Dashboard")
+st.markdown("*Kies een voorspellingsmodel om mee te starten*")
 
-# API URL
-# API_URL = "https://bralma-backend.onrender.com"
+st.markdown("---")
+
+# Create two columns for navigation buttons
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("### ⚡ Electricity Demand Predictor")
+    st.markdown("""
+    Voorspel **UK elektriciteitsvraag** op basis van:
+    - 🌬️ Windkracht (5 categorieën)
+    - ☀️ Zonne-energie (auto-berekend)
+    - ⏰ Tijdstip (48 settlement periods)
+    - 📅 Seizoen (winter/lente/zomer/herfst)
+    """)
+    st.markdown("")  # Spacer
+    
+with col2:
+    st.markdown("### 🏠 UK Housing Type Predictor")
+    st.markdown("""
+    Voorspel **property type** (D/S/T/F) op basis van:
+    - 💰 Prijs (categorieën of exact)
+    - 📍 Locatie (stad, county, regio)
+    - 🏗️ Kenmerken (freehold/leasehold, nieuw/oud)
+    """)
+    st.markdown("")  # Spacer
+
+# Buttons on same row below descriptions
+col_btn1, col_btn2 = st.columns(2)
+
+with col_btn1:
+    if st.button("➡️ Ga naar Electricity Demand", type="primary", use_container_width=True):
+        st.switch_page("pages/0_Electricity_Demand.py")
+
+with col_btn2:
+    if st.button("➡️ Ga naar UK Housing", type="primary", use_container_width=True):
+        st.switch_page("pages/1_🏠_UK_Housing.py")
+
+st.markdown("---")
+
+# Dataset info section
+st.markdown("## 📊 Dataset Overzicht")
+
+col_dataset1, col_dataset2 = st.columns(2)
+
+with col_dataset1:
+    st.markdown("### ⚡ Electricity Demand Dataset")
+    st.markdown("""
+    **📅 Periode:** 2001-2025  
+    **📊 Aantal Records:** ~1.2M observations  
+    **⏰ Resolutie:** 30-minuten intervals (48 per dag)  
+    **🌍 Regio:** United Kingdom
+    
+    **Features:**
+    - Settlement Period (1-48)
+    - England & Wales Demand (MW)
+    - Embedded Wind Generation (MW)
+    - Embedded Wind Capacity (MW)
+    - Embedded Solar Generation (MW)
+    - Embedded Solar Capacity (MW)
+    
+    """)
+
+with col_dataset2:
+    st.markdown("### 🏠 UK Housing Price Dataset")
+    st.markdown("""
+    **📅 Periode:** 2001-2017  
+    **📊 Aantal Records:** ~600K transactions  
+    **🌍 Regio:** England, Wales, Scotland, Northern Ireland  
+    **💰 Prijsbereik:** £10K - £10M+
+    
+    **Features:**
+    - Price (transactie prijs)
+    - Old/New (Bestaande/Nieuwbouw)
+    - Duration (Freehold/Leasehold)
+    - Location (City, County, Region)
+    
+    """)
+
+
+st.markdown("---")
 
 # Sidebar - API Status & Quick Info
-st.sidebar.title("⚙️ Instellingen")
-
-st.sidebar.markdown("### 🔗 API Status")
-try:
-    health_check = requests.get(f"{API_URL}/health", timeout=5)
-    if health_check.status_code == 200:
-        st.sidebar.success("✅ API Verbonden")
-        st.sidebar.caption("Backend actief")
-    else:
-        st.sidebar.error("❌ API Error")
-except:
-    st.sidebar.warning("⚠️ API Offline")
-    st.sidebar.caption("Render.com wake-up: ~15 sec")
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 📚 Snelle Voorbeelden")
-
+st.sidebar.title("🤖 ML Predictions")
+st.sidebar.markdown("### 📖 Quick Info")
 st.sidebar.markdown("""
-**🌙 Nacht (Laag demand)**
-- Seizoen: Winter
-- Tijd: Period 6 (03:00)
-- Wind: Matig
-- Verwacht: ~22 GW
+**⚡ Electricity Demand:**
+- Type: Regression
+- Output: MW demand
+- Features: 6 parameters
 
-**🏭 Avondpiek (Hoog demand)**
-- Seizoen: Winter  
-- Tijd: Period 36 (18:00)
-- Wind: Weinig
-- Verwacht: ~45 GW
-
-**☀️ Zomerdag (Veel hernieuwbaar)**
-- Seizoen: Zomer
-- Tijd: Period 26 (13:00)
-- Wind: Veel
-- Verwacht: 50%+ hernieuwbaar
-
-**🌬️ Stormdag**
-- Seizoen: Winter
-- Tijd: Period 20 (10:00)
-- Wind: Storm
-- Verwacht: 60%+ hernieuwbaar
-""")
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 💡 Tips")
-st.sidebar.info("""
-- **Peak demand**: 17:00-20:00 (winter)
-- **Laagste demand**: 03:00-05:00
-- **Beste hernieuwbaar**: zomer middag + veel wind
-- **Slechtste**: winter nacht + windstil
+**🏠 UK Housing:**
+- Type: Classification  
+- Output: Property type (D/S/T/F)
+- Features: 8 parameters
 """)
 
 st.sidebar.markdown("---")

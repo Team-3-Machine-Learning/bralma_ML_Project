@@ -6,7 +6,7 @@ import requests
 import math
 from datetime import datetime, date
 
-# Page configuration
+# Header of the page
 st.set_page_config(page_title="⚡ Electricity Demand", layout="wide", page_icon="⚡")
 st.title("⚡ UK Electricity Demand Predictor")
 st.markdown("*Voorspel de elektriciteitsvraag op basis van weer, tijd en seizoen*")
@@ -103,7 +103,7 @@ with tab1:
     with col1:
         st.markdown("### 📅 Wanneer?")
         
-        # Season selection
+        # Season dropdown selection
         season = st.selectbox(
             "Seizoen",
             ["Winter", "Lente", "Zomer", "Herfst"],
@@ -137,7 +137,7 @@ with tab1:
     with col2:
         st.markdown("### 🌬️☀️ Weer Condities")
         
-        # Wind category (user-friendly)
+        # Wind category (user-friendly slider)
         wind_category = st.select_slider(
             "Windkracht",
             options=["Geen (windstil)", "Weinig", "Matig", "Veel", "Storm"],
@@ -207,7 +207,7 @@ with tab1:
             if prediction is not None:
                 # Display results
                 st.markdown("### 🎯 Resultaten")
-                col_res1, col_res2, col_res3 = st.columns(3)
+                col_res1, col_res2 = st.columns(3)
 
                 with col_res1:
                     st.metric(
@@ -218,18 +218,6 @@ with tab1:
                 with col_res2:
                     renewable_pct = ((wind_generation + solar_generation) / prediction * 100) if prediction > 0 else 0
                     st.metric("♻️ Hernieuwbaar Aandeel", f"{renewable_pct:.1f}%")
-                
-                # with col_res3:
-                #     if confidence:
-                #         st.metric("📊 Betrouwbaarheid", f"{confidence:.1%}")
-                #     else:
-                #         # Calculate typical demand range for context
-                #         if hour in [17, 18, 19]:
-                #             st.metric("Typisch (17-20u)", "40-48k MW")
-                #         elif hour in [0, 1, 2, 3]:
-                #             st.metric("Typisch (nacht)", "20-25k MW")
-                #         else:
-                #             st.metric("Typisch (dag)", "25-35k MW")
                 
                 st.success("✅ Voorspelling succesvol!")
                 
@@ -294,25 +282,6 @@ with tab2:
         - Winter, 13:00 → ~1,800 MW (15% × 12 GW)
         - Altijd 0 tussen 20:00-06:00
         
-        ### 🔌 Interconnectors (Geavanceerd)
-        
-        Verbindingen met buurlanden:
-        - **IFA2** 🇫🇷 France (1000 MW)
-        - **BritNed** 🇳🇱 Netherlands (1000 MW)
-        - **Moyle** Northern Ireland (500 MW)
-        - **East-West** 🇮🇪 Ireland (500 MW)
-        - **Nemo** 🇧🇪 Belgium (1000 MW)
-        
-        *Default waardes: typisch import scenario (UK importeert meestal)*
-        
-        ### 🤖 Model Informatie
-        
-        - **Trainingsdata**: UK electricity 2001-2017 (16 jaar)
-        - **Features**: 13 input variabelen
-        - **API**: .NET 9 backend (Render.com)
-        - **Latency**: ~500ms per voorspelling
-        - **Free tier**: 15sec wake-up tijd (first request)
-        
         ### 📚 Bronnen
         
         - **Data**: UK National Grid ESO
@@ -327,11 +296,10 @@ with tab2:
         ### 🔗 Links
         
         - [GitHub Repository](https://github.com/Team-3-Machine-Learning/bralma_ML_Project)
-        - [API Swagger]({API_URL}/swagger)
         
-        ### 👥 Team
+        ### 👥 Team 2
         
-        **Machine Learning - Cloud AI**  
+        **Bralma**  
         November 2025
         
         ---
@@ -342,21 +310,6 @@ with tab2:
         """)
 
 # Sidebar - API Status & Quick Info
-st.sidebar.title("⚙️ Instellingen")
-
-st.sidebar.markdown("### 🔗 API Status")
-try:
-    health_check = requests.get(f"{API_URL}/health", timeout=5)
-    if health_check.status_code == 200:
-        st.sidebar.success("✅ API Verbonden")
-        st.sidebar.caption("Backend actief")
-    else:
-        st.sidebar.error("❌ API Error")
-except:
-    st.sidebar.warning("⚠️ API Offline")
-    st.sidebar.caption("Render.com wake-up: ~15 sec")
-
-st.sidebar.markdown("---")
 st.sidebar.markdown("### 📚 Snelle Voorbeelden")
 
 st.sidebar.markdown("""
@@ -383,15 +336,6 @@ st.sidebar.markdown("""
 - Tijd: Period 20 (10:00)
 - Wind: Storm
 - Verwacht: 60%+ hernieuwbaar
-""")
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 💡 Tips")
-st.sidebar.info("""
-- **Peak demand**: 17:00-20:00 (winter)
-- **Laagste demand**: 03:00-05:00
-- **Beste hernieuwbaar**: zomer middag + veel wind
-- **Slechtste**: winter nacht + windstil
 """)
 
 st.sidebar.markdown("---")

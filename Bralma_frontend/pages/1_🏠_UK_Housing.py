@@ -229,7 +229,6 @@ with tab1:
             "county": county.upper(),
         }
 
-
         # payload = {
         #     "price": 586945,
         #     "date_of_transfer": "2017-02-15",
@@ -263,95 +262,69 @@ with tab1:
                     full_type = type_mapping.get(property_type, property_type)
                     st.metric("Voorspeld Type", full_type)
                 
-                with col_res2:
-                    if confidence:
-                        st.metric("📊 Zekerheid", f"{confidence:.1%}")
-                    else:
-                        st.metric("Model", "Classification")
+                # with col_res2:
+                #     if confidence:
+                #         st.metric("📊 Zekerheid", f"{confidence:.1%}")
+                #     # else:
+                #     #     st.metric("Model", "Classification")
                 
-                with col_res3:
-                    # Show typical price for this type
-                    type_price_ranges = {
-                        "D": "£350k-800k",
-                        "S": "£200k-400k",
-                        "T": "£150k-300k",
-                        "F": "£100k-250k"
-                    }
-                    typical_range = type_price_ranges.get(property_type, "Varieert")
-                    st.metric("Typisch prijsbereik", typical_range)
+                # with col_res3:
+                #     # Show typical price for this type
+                #     type_price_ranges = {
+                #         "D": "£350k-800k",
+                #         "S": "£200k-400k",
+                #         "T": "£150k-300k",
+                #         "F": "£100k-250k"
+                #     }
+                #     typical_range = type_price_ranges.get(property_type, "Varieert")
+                #     st.metric("Typisch prijsbereik", typical_range)
                 
                 st.success("✅ Voorspelling succesvol!")
                 
-                # Show probabilities if available
-                if probabilities:
-                    st.markdown("### 📊 Kansenverdeling per Type")
+                # # Show probabilities if available
+                # if probabilities:
+                #     st.markdown("### 📊 Kansenverdeling per Type")
                     
-                    # Create dataframe for visualization
-                    prob_df = pd.DataFrame({
-                        "Type": list(probabilities.keys()),
-                        "Kans (%)": [p * 100 for p in probabilities.values()]
-                    })
+                #     # Create dataframe for visualization
+                #     prob_df = pd.DataFrame({
+                #         "Type": list(probabilities.keys()),
+                #         "Kans (%)": [p * 100 for p in probabilities.values()]
+                #     })
                     
-                    # Sort by probability
-                    prob_df = prob_df.sort_values("Kans (%)", ascending=False)
+                #     # Sort by probability
+                #     prob_df = prob_df.sort_values("Kans (%)", ascending=False)
                     
-                    col_chart1, col_chart2 = st.columns([2, 1])
+                #     col_chart1, col_chart2 = st.columns([2, 1])
                     
-                    with col_chart1:
-                        # Bar chart
-                        fig = px.bar(
-                            prob_df,
-                            x="Type",
-                            y="Kans (%)",
-                            title="Waarschijnlijkheid per Property Type",
-                            color="Kans (%)",
-                            color_continuous_scale="Blues"
-                        )
-                        fig.update_layout(showlegend=False)
-                        st.plotly_chart(fig, use_container_width=True)
+                #     with col_chart1:
+                #         # Bar chart
+                #         fig = px.bar(
+                #             prob_df,
+                #             x="Type",
+                #             y="Kans (%)",
+                #             title="Waarschijnlijkheid per Property Type",
+                #             color="Kans (%)",
+                #             color_continuous_scale="Blues"
+                #         )
+                #         fig.update_layout(showlegend=False)
+                #         st.plotly_chart(fig, use_container_width=True)
                     
-                    with col_chart2:
-                        st.markdown("**💡 Interpretatie:**")
+                #     with col_chart2:
+                #         st.markdown("**💡 Interpretatie:**")
                         
-                        max_prob = prob_df.iloc[0]["Kans (%)"]
-                        second_prob = prob_df.iloc[1]["Kans (%)"] if len(prob_df) > 1 else 0
+                #         max_prob = prob_df.iloc[0]["Kans (%)"]
+                #         second_prob = prob_df.iloc[1]["Kans (%)"] if len(prob_df) > 1 else 0
                         
-                        if max_prob > 80:
-                            st.success(f"✅ Zeer zeker: {max_prob:.1f}%")
-                        elif max_prob > 60:
-                            st.info(f"📊 Waarschijnlijk: {max_prob:.1f}%")
-                        else:
-                            st.warning(f"⚠️ Onzeker: {max_prob:.1f}% vs {second_prob:.1f}%")
+                #         if max_prob > 80:
+                #             st.success(f"✅ Zeer zeker: {max_prob:.1f}%")
+                #         elif max_prob > 60:
+                #             st.info(f"📊 Waarschijnlijk: {max_prob:.1f}%")
+                #         else:
+                #             st.warning(f"⚠️ Onzeker: {max_prob:.1f}% vs {second_prob:.1f}%")
                         
-                        st.markdown("---")
-                        st.dataframe(prob_df, hide_index=True, use_container_width=True)
+                #         st.markdown("---")
+                #         st.dataframe(prob_df, hide_index=True, use_container_width=True)
                 
-                # Additional insights
-                st.markdown("### 💡 Analyse")
-                
-                col_insight1, col_insight2 = st.columns(2)
-                
-                with col_insight1:
-                    st.markdown("**Prijs vs Type:**")
-                    if property_type == "D" and price < 300000:
-                        st.warning("⚠️ Detached voor £<300k is ongewoon (mogelijk regio effect)")
-                    elif property_type == "F" and price > 400000:
-                        st.info("💎 Dure flat → waarschijnlijk London/penthouse")
-                    elif property_type == "T" and duration_code == "L":
-                        st.info("📋 Terraced met leasehold is zeldzaam")
-                    else:
-                        st.success("✅ Typische combinatie voor deze regio")
-                
-                with col_insight2:
-                    st.markdown("**Regio Context:**")
-                    if "LONDON" in county:
-                        st.info("🏙️ London: Flats en terraced dominant, hoge prijzen")
-                    elif region == "North":
-                        st.info("⬆️ Noord-Engeland: Lagere prijzen, meer terraced/semi")
-                    elif region == "South West":
-                        st.info("🌊 Zuidwest: Detached populairder, hogere prijzen")
-                    else:
-                        st.info(f"📍 {region}: Typische {county} markt")
 
 
 with tab2:
@@ -428,12 +401,6 @@ with tab2:
         - Detached populairder (30% markt)
         - Weinig flats (<15%)
         
-        ### 🤖 Model Details
-        
-        - **Algorithm**: Random Forest / XGBoost Classification
-        - **Features**: 8 input variabelen
-        - **Accuracy**: ~75-85% (depends on region)
-        - **Training**: Balanced classes (oversampling rare types)
         
         ### 📚 Waarom deze Features?
         
@@ -443,15 +410,10 @@ with tab2:
         - Duration (F/L) → ownership type indicator
         - Old/New → construction period effect
         
-        **❌ Niet gebruikt**:
-        - Datum/jaar → geen directe invloed op type
-        - PPD category → technisch, niet semantisch
-        
         ### 🔗 Links
         
         - [GitHub Repository](https://github.com/Team-3-Machine-Learning/bralma_ML_Project)
         - [UK Land Registry Data](https://landregistry.data.gov.uk/)
-        - [API Swagger]({API_URL}/swagger)
         
         ### 💡 Tips voor Voorspelling
         
@@ -466,18 +428,6 @@ with tab2:
         """)
 
 # Sidebar
-st.sidebar.title("🏠 UK Housing")
-
-st.sidebar.markdown("### 🔗 API Status")
-try:
-    health_check = requests.get(f"{API_URL}/health", timeout=5)
-    if health_check.status_code == 200:
-        st.sidebar.success("✅ API Verbonden")
-    else:
-        st.sidebar.error("❌ API Error")
-except:
-    st.sidebar.warning("⚠️ API Offline")
-
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 📚 Snelle Voorbeelden")
 
