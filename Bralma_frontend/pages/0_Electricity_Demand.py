@@ -207,7 +207,7 @@ with tab1:
             if prediction is not None:
                 # Display results
                 st.markdown("### 🎯 Resultaten")
-                col_res1, col_res2 = st.columns(3)
+                col_res1, col_res2 = st.columns(2)
 
                 with col_res1:
                     st.metric(
