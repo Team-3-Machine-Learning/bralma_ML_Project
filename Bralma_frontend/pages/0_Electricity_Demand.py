@@ -71,7 +71,7 @@ def predict_demand_api(payload):
         
         if response.status_code == 200:
             data = response.json()
-            return data.get('englandWalesDemand'), data.get('confidence', None), data.get('probabilities', None)
+            return data.get('englandWalesDemand')
         else:
             st.error(f"API Error: {response.status_code} - {response.text}")
             return None, None
