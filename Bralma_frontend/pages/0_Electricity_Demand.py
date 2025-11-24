@@ -198,7 +198,7 @@ with tab1:
         }
         
         with st.spinner("⏳ API call in progress..."):
-            prediction, confidence = predict_demand_api(payload)
+            prediction = predict_demand_api(payload)
             
             if prediction is not None:
                 # Display results
@@ -215,17 +215,17 @@ with tab1:
                     renewable_pct = ((wind_generation + solar_generation) / prediction * 100) if prediction > 0 else 0
                     st.metric("♻️ Hernieuwbaar Aandeel", f"{renewable_pct:.1f}%")
                 
-                with col_res3:
-                    if confidence:
-                        st.metric("📊 Betrouwbaarheid", f"{confidence:.1%}")
-                    else:
-                        # Calculate typical demand range for context
-                        if hour in [17, 18, 19]:
-                            st.metric("Typisch (17-20u)", "40-48k MW")
-                        elif hour in [0, 1, 2, 3]:
-                            st.metric("Typisch (nacht)", "20-25k MW")
-                        else:
-                            st.metric("Typisch (dag)", "25-35k MW")
+                # with col_res3:
+                #     if confidence:
+                #         st.metric("📊 Betrouwbaarheid", f"{confidence:.1%}")
+                #     else:
+                #         # Calculate typical demand range for context
+                #         if hour in [17, 18, 19]:
+                #             st.metric("Typisch (17-20u)", "40-48k MW")
+                #         elif hour in [0, 1, 2, 3]:
+                #             st.metric("Typisch (nacht)", "20-25k MW")
+                #         else:
+                #             st.metric("Typisch (dag)", "25-35k MW")
                 
                 st.success("✅ Voorspelling succesvol!")
                 
