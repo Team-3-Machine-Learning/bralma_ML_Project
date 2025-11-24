@@ -220,17 +220,29 @@ with tab1:
     
     if st.button("🚀 Voorspel Property Type", type="primary", use_container_width=True):
         # Build payload for API
+        # payload = {
+        #     "price": price,
+        #     "date_of_transfer": "2017-06-15",  # Dummy date (niet gebruikt in model)
+        #     "old/new": old_new_code,
+        #     "duration": duration_code,
+        #     "town/city": town_city,
+        #     "district": district,
+        #     "county": county,
+        #     "ppdcategory_type": "A",  # Standard (meeste transacties)
+        #     "year": 2017  # Dummy year
+        # }
+
         payload = {
-            "price": price,
-            "dateOfTransfer": "2017-06-15",  # Dummy date (niet gebruikt in model)
-            "oldNew": old_new_code,
-            "duration": duration_code,
-            "townCity": town_city,
-            "district": district,
-            "county": county,
-            "ppdcategoryType": "A",  # Standard (meeste transacties)
-            "year": 2017  # Dummy year
-        }
+            "price": 586945,
+            "date_of_transfer": "2017-02-15",
+            "old/new": "N",
+            "duration": "F",
+            "town/city": "WETHERBY",
+            "district": "LEEDS",
+            "county": "WEST YORKSHIRE",
+            "ppdcategory_type": "A",
+            "year": 2017
+            }
         
         with st.spinner("⏳ API call in progress..."):
             property_type, confidence, probabilities = predict_property_type_api(payload)
