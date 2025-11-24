@@ -222,15 +222,25 @@ with tab1:
         # Build payload for API
         payload = {
             "price": price,
-            "dateOfTransfer": "2017-06-15",  # Dummy date (niet gebruikt in model)
-            "oldNew": old_new_code,
+            "old/new": old_new_code,
             "duration": duration_code,
-            "townCity": town_city,
-            "district": district,
-            "county": county,
-            "ppdcategoryType": "A",  # Standard (meeste transacties)
-            "year": 2017  # Dummy year
+            "town/city": town_city.upper(),
+            "district": district.upper(),
+            "county": county.upper(),
         }
+
+
+        # payload = {
+        #     "price": 586945,
+        #     "date_of_transfer": "2017-02-15",
+        #     "old/new": "N",
+        #     "duration": "F",
+        #     "town/city": "WETHERBY",
+        #     "district": "LEEDS",
+        #     "county": "WEST YORKSHIRE",
+        #     "ppdcategory_type": "A",
+        #     "year": 2017
+        #     }
         
         with st.spinner("⏳ API call in progress..."):
             property_type, confidence, probabilities = predict_property_type_api(payload)

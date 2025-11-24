@@ -1,3 +1,4 @@
+import json
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -11,7 +12,7 @@ st.title("⚡ UK Electricity Demand Predictor")
 st.markdown("*Voorspel de elektriciteitsvraag op basis van weer, tijd en seizoen*")
 
 # API URL
-API_URL = "https://bralma-ml-project.onrender.co/prediction/elecdemand"
+API_URL = "https://bralma-ml-project.onrender.com/prediction/elecdemand"
 
 # Mapping functies: User-friendly → API values
 def map_wind_to_mw(category, capacity=6000):
@@ -71,7 +72,10 @@ def predict_demand_api(payload):
         
         if response.status_code == 200:
             data = response.json()
-            return data.get('prediction'), data.get('confidence', None)
+            inner_json_str = data.get('englandWalesDemand')
+            if inner_json_str:
+                inner_dict = json.loads(inner_json_str)
+                return float(inner_dict["label"])
         else:
             st.error(f"API Error: {response.status_code} - {response.text}")
             return None, None
@@ -190,23 +194,21 @@ with tab1:
     if st.button("🚀 Voorspel Demand", type="primary", use_container_width=True):
         # Build payload for API
         payload = {
-            "settlementDate": "2017-12-31",  # Dummy date (niet gebruikt in model)
-            "settlementPeriod": settlement_period,
-            "englandWalesDemand": england_wales_demand,
-            "embeddedWindGeneration": float(wind_generation),
-            "embeddedWindCapacity": float(wind_capacity),
-            "embeddedSolarGeneration": float(solar_generation),
-            "embeddedSolarCapacity": float(solar_capacity)
+            "settlement_period": settlement_period,
+            "embedded_wind_generation": float(wind_generation),
+            "embedded_wind_capacity": float(wind_capacity),
+            "embedded_solar_generation": float(solar_generation),
+            "embedded_solar_capacity": float(solar_capacity)
         }
         
         with st.spinner("⏳ API call in progress..."):
-            prediction, confidence = predict_demand_api(payload)
+            prediction = predict_demand_api(payload)
             
             if prediction is not None:
                 # Display results
                 st.markdown("### 🎯 Resultaten")
                 col_res1, col_res2, col_res3 = st.columns(3)
-                
+
                 with col_res1:
                     st.metric(
                         "Voorspelde Vraag", 
@@ -217,17 +219,17 @@ with tab1:
                     renewable_pct = ((wind_generation + solar_generation) / prediction * 100) if prediction > 0 else 0
                     st.metric("♻️ Hernieuwbaar Aandeel", f"{renewable_pct:.1f}%")
                 
-                with col_res3:
-                    if confidence:
-                        st.metric("📊 Betrouwbaarheid", f"{confidence:.1%}")
-                    else:
-                        # Calculate typical demand range for context
-                        if hour in [17, 18, 19]:
-                            st.metric("Typisch (17-20u)", "40-48k MW")
-                        elif hour in [0, 1, 2, 3]:
-                            st.metric("Typisch (nacht)", "20-25k MW")
-                        else:
-                            st.metric("Typisch (dag)", "25-35k MW")
+                # with col_res3:
+                #     if confidence:
+                #         st.metric("📊 Betrouwbaarheid", f"{confidence:.1%}")
+                #     else:
+                #         # Calculate typical demand range for context
+                #         if hour in [17, 18, 19]:
+                #             st.metric("Typisch (17-20u)", "40-48k MW")
+                #         elif hour in [0, 1, 2, 3]:
+                #             st.metric("Typisch (nacht)", "20-25k MW")
+                #         else:
+                #             st.metric("Typisch (dag)", "25-35k MW")
                 
                 st.success("✅ Voorspelling succesvol!")
                 
